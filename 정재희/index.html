@@ -1,133 +1,233 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>내 위치 지도 - 검색 기능 추가</title>
-    
+    <title>내 위치 지도 - 홈</title>
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; font-family: sans-serif; }
-
-        /* 지도 전체 컨테이너 */
-        .app-container { position: relative; width: 393px; height: 852px; box-shadow: 0 12px 40px rgba(0,0,0,0.15); border-radius: 20px; overflow: hidden; }
-        
-        #map { width: 100%; height: 100%; }
-
-        /* 검색창 스타일 */
-        .search-box {
-            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-            width: 90%; z-index: 1000;
+        :root {
+            --active-pink: #FFCFE1;
+            --gray-color: #B8B6B6;
+            --hot-panel-bg: #FFFDEF;
         }
 
-        #search-input {
-            width: 100%; padding: 12px 15px; border: none; border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 16px; outline: none;
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+            font-family: 'Pretendard', sans-serif;
         }
 
-        /* 연관 검색어(추천 목록) 스타일 */
-        .suggestions {
-            background: white; border-radius: 0 0 10px 10px; margin-top: 2px;
-            max-height: 200px; overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            display: none; /* 검색 전에는 숨김 */
+        .app-container {
+            position: relative;
+            width: 393px;
+            height: 852px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            background: white;
         }
 
-        .suggestion-item {
-            padding: 12px 15px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 14px;
+        #map { width: 100%; height: 100%; z-index: 1; }
+
+        /* --- 상단 인터페이스 --- */
+        .top-interface {
+            position: absolute; top: 60px; left: 20px; right: 20px;
+            z-index: 1000; display: flex; align-items: center; justify-content: space-between;
         }
 
-        .suggestion-item:last-child { border-bottom: none; }
-        .suggestion-item:hover { background-color: #f9f9f9; }
+        .search-wrapper {
+            position: relative; width: 240px; height: 50px; background: white;
+            border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex; align-items: center; padding: 0 15px;
+        }
+        #search-input { border: none; outline: none; width: 100%; font-size: 14px; }
+
+        .route-btn {
+            width: 50px; height: 50px; border: none; border-radius: 15px;
+            background-color: white; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* --- 현재 위치 버튼 --- */
+        .locate-btn {
+            position: absolute;
+            bottom: 160px; 
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4285F4;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        /* --- 슬라이드 바 --- */
+        .sliding-panel {
+            position: absolute;
+            top: 702px; 
+            left: 0;
+            width: 100%;
+            height: 800px; 
+            background-color: var(--hot-panel-bg);
+            z-index: 1050;
+            border-radius: 25px 25px 0 0;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .sliding-panel.open { transform: translateY(-573px); }
+
+        .panel-header { padding: 20px; cursor: pointer; }
+        .handle { width: 40px; height: 4px; background-color: #E0E0E0; border-radius: 2px; margin: 0 auto 20px; }
+
+        .title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 2.19px; }
+        .title-row h2 { margin: 0; font-size: 18px; font-weight: 800; color: #222; }
+        .hot-badge { background-color: #F8EB86; color: black; font-size: 10px; font-weight: bold; padding: 3px 10px; border-radius: 20px; }
+        .subtitle { font-size: 13px; color: #9F9E9E; margin: 0; margin-bottom: 29.81px; }
+
+        /* --- 메인 콘텐츠 박스 및 내부 요소 --- */
+        .main-content-box {
+            width: 357px; height: 155px; background-color: #ffffff;
+            border-radius: 15px; margin-left: 2px; position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden;
+        }
+
+        .image-container {
+            position: absolute; left: 17.46px; top: 11.54px;
+            width: 133.47px; height: 128.74px; background-color: #eee;
+            border-radius: 10px; overflow: hidden;
+        }
+        .image-container img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* 텍스트 정보 컨테이너 */
+        .info-container {
+            position: absolute;
+            left: 165px; /* 이미지(17.46 + 133.47) 이후 여백 고려 */
+            top: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .place-name {
+            margin-top: 16.32px; /* 위 여백 16.32 */
+            font-size: 20px;
+            font-weight: bold;
+            color: #222;
+            letter-spacing: -0.5px;
+        }
+
+        .distance-info {
+            margin-top: 4.15px; /* 장소명과 여백 4.15 */
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 하단 바 */
+        .bottom-nav {
+            position: absolute; bottom: 0; width: 100%; height: 85px;
+            background: white; z-index: 1100; display: flex;
+            justify-content: space-around; align-items: center; border-top: 1px solid #eee; padding-bottom: 15px;
+        }
+        .nav-item { text-decoration: none; display: flex; flex-direction: column; align-items: center; color: var(--gray-color); }
+        .nav-item.active { color: var(--active-pink); }
     </style>
 </head>
+
 <body>
 
     <div class="app-container">
-        <div class="search-box">
-            <input type="text" id="search-input" placeholder="장소, 주소 검색..." autocomplete="off">
-            <div id="suggestions" class="suggestions"></div>
+        <div class="top-interface">
+            <div class="search-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-input" placeholder="검색어를 입력해주세요." autocomplete="off">
+            </div>
+            <button class="route-btn">
+                <img src="../img/길찾기 버튼.png" alt="길찾기" style="width:100%; height:100%; object-fit:cover;">
+            </button>
         </div>
 
         <div id="map"></div>
+
+        <button class="locate-btn" onclick="findMyLocation()">
+            <i class="fa-solid fa-location-crosshairs"></i>
+        </button>
+
+        <div class="sliding-panel" id="sliding-panel">
+            <div class="panel-header" onclick="togglePanel()">
+                <div class="handle"></div>
+                <div class="title-row">
+                    <h2>내 주변 인기 장소</h2>
+                    <span class="hot-badge">HOT</span>
+                </div>
+                <p class="subtitle">지금 가장 인기있는 장소</p>
+
+                <div class="main-content-box">
+                    <div class="image-container">
+                        <img src="/img/국립중앙박물관.png" alt="장소 이미지">
+                    </div>
+                    <div class="info-container">
+                        <div class="place-name">국립중앙박물관</div>
+                        <div class="distance-info">여기서 3.4km</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i><span>홈</span></a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-users"></i><span>게시판</span></a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-heart"></i><span>찜</span></a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-user"></i><span>마이페이지</span></a>
+        </nav>
     </div>
 
     <script>
-        // 1. 지도 초기화
-        var map = L.map('map', { doubleClickZoom: false }).setView([37.5665, 126.9780], 16);
-
-        // 2. 구글 지도 타일 (한글 지원)
-        L.tileLayer('https://mt1.google.com/vt/lyrs=m&hl=ko&x={x}&y={y}&z={z}').addTo(map);
-
-        var currentMarker;
-        var searchMarker;
-
-        // 3. 내 위치 찾기 (따닥 더블 클릭)
-        function findMyLocation() {
-            map.locate({setView: true, maxZoom: 16});
+        function togglePanel() {
+            document.getElementById('sliding-panel').classList.toggle('open');
         }
-        findMyLocation();
 
-        map.on('locationfound', function(e) {
-            if (currentMarker) map.removeLayer(currentMarker);
-            currentMarker = L.marker(e.latlng).addTo(map).bindPopup("<b>당신의 현재위치</b>").openPopup();
-        });
+        var map = L.map('map', { zoomControl: false }).setView([37.5665, 126.9780], 16);
+        L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}').addTo(map);
 
-        map.on('dblclick', function() { findMyLocation(); });
+        var userMarker;
 
-        // 4. 검색 및 연관 검색어 기능
-        const searchInput = document.getElementById('search-input');
-        const suggestionsBox = document.getElementById('suggestions');
-
-        // 입력할 때마다 연관 검색어 가져오기
-        searchInput.addEventListener('input', function() {
-            const query = this.value;
-            if (query.length < 2) {
-                suggestionsBox.style.display = 'none';
+        function findMyLocation() {
+            if (!navigator.geolocation) {
+                alert("브라우저가 위치 정보를 지원하지 않습니다.");
                 return;
             }
-
-            // 오픈소스 검색 API 사용 (Nominatim)
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&addressdetails=1&limit=5&accept-language=ko`)
-                .then(response => response.json())
-                .then(data => {
-                    suggestionsBox.innerHTML = '';
-                    if (data.length > 0) {
-                        suggestionsBox.style.display = 'block';
-                        data.forEach(place => {
-                            const div = document.createElement('div');
-                            div.className = 'suggestion-item';
-                            div.innerText = place.display_name;
-                            div.onclick = function() {
-                                moveMapTo(place.lat, place.lon, place.display_name);
-                            };
-                            suggestionsBox.appendChild(div);
-                        });
-                    } else {
-                        suggestionsBox.style.display = 'none';
-                    }
-                });
-        });
-
-        // 장소 선택 시 지도 이동
-        function moveMapTo(lat, lon, name) {
-            const latlng = [lat, lon];
-            map.setView(latlng, 16);
-            
-            if (searchMarker) map.removeLayer(searchMarker);
-            searchMarker = L.marker(latlng).addTo(map).bindPopup(`<b>${name}</b>`).openPopup();
-            
-            suggestionsBox.style.display = 'none';
-            searchInput.value = name;
+            map.locate({ setView: true, maxZoom: 16 });
         }
 
-        // 검색창 외 클릭 시 목록 닫기
-        document.addEventListener('click', (e) => {
-            if (!document.querySelector('.search-box').contains(e.target)) {
-                suggestionsBox.style.display = 'none';
-            }
+        map.on('locationfound', function(e) {
+            if (userMarker) { map.removeLayer(userMarker); }
+            userMarker = L.circleMarker(e.latlng, {
+                radius: 8, color: 'white', weight: 2, fillColor: '#4285F4', fillOpacity: 1
+            }).addTo(map).bindPopup("현재위치").openPopup();
         });
+
+        map.on('locationerror', function(e) {
+            alert("위치 정보를 가져올 수 없습니다: " + e.message);
+        });
+
+        findMyLocation();
     </script>
 </body>
 </html>
