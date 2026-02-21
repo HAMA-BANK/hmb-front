@@ -166,8 +166,6 @@
             align-items: center;
             gap: 4px;
         }
-
-        
     </style>
 </head>
 
@@ -186,7 +184,10 @@
             <div class="tab">Q&A</div>
         </div>
 
-        <div class="feed-container">
+
+        <div id="post-container"></div>
+
+        <!-- <div class="feed-container">
             <a href="상세.html" style="text-decoration: none; color: inherit;">
                 <div class="post-card">
                     <div class="post-user">
@@ -301,7 +302,7 @@
                     <span><i class="fa-regular fa-comment"></i> 28</span>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <nav class="bottom-nav">
             <a href="main.html" class="nav-item"><i class="fa-solid fa-house"></i><span>홈</span></a>
@@ -310,6 +311,60 @@
             <a href="MyPage.html" class="nav-item"><i class="fa-solid fa-user"></i><span>마이페이지</span></a>
         </nav>
     </div>
+
+
+
+
+
+    <script>
+        const API_URL = 'http://10.55.203.188:8080/api/posts?category=popular';
+
+        async function loadPosts() {
+            try {
+                const response = await fetch(API_URL);
+                const result = await response.json();
+
+                if (result.success) {
+                    // 1. 기존 .feed-container 스타일을 유지하기 위해 클래스 추가
+                    const container = document.getElementById('post-container');
+                    container.classList.add('feed-container');
+
+                    // 2. 게시물 생성
+                    result.data.forEach(post => {
+                        const postHtml = `
+                        <div class="post-card">
+                            <div class="post-user">
+                                <div class="user-icon">
+                                    <img src="${post.author.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                                </div>
+                                <div class="user-info">
+                                    <span class="name">${post.author.name}</span>
+                                    <span class="time">${post.date}</span>
+                                </div>
+                            </div>
+                            
+                            <h2 class="post-title">${post.title}</h2>
+                            <p class="post-content">${post.content}</p>
+                            
+                            ${post.imageUrl ? `<img src="${post.imageUrl}" class="post-img">` : ''}
+                            
+                            <div class="post-footer">
+                                <span><i class="fa-regular fa-heart"></i> ${post.likes}</span>
+                                <span><i class="fa-regular fa-comment"></i> ${post.comments}</span>
+                            </div>
+                        </div>
+                    `;
+                        container.innerHTML += postHtml;
+                    });
+                }
+            } catch (error) {
+                console.error("데이터 로드 실패:", error);
+                document.getElementById('post-container').innerHTML = "<p style='padding:20px;'>데이터를 불러올 수 없습니다.</p>";
+            }
+        }
+
+        loadPosts();
+    </script>
 </body>
 
 </html>
