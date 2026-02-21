@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 위치 지도 - 홈</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --active-pink: #FFCFE1;
+            --heart-pink: #FF6B9B;
+            --gray-color: #B8B6B6;
+            --hot-panel-bg: #FFFDEF;
+            --button-bg: #FFFCFD;
+            /* 새로운 버튼 배경색 */
+            --button-icon-color: #FFCFE1;
+            /* 새로운 버튼 아이콘 색상 */
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        .app-container {
+            position: relative;
+            width: 393px;
+            height: 852px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            background: white;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* --- 상단 검색바 --- */
+        .top-interface {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 240px;
+            height: 50px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+        }
+
+        .search-wrapper i {
+            color: #999;
+            margin-right: 8px;
+        }
+
+        #search-input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        #search-input::placeholder {
+            color: #999;
+        }
+
+        .route-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 15px;
+            background-color: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        /* --- 플로팅 버튼 (위치 및 글쓰기) --- */
+        .locate-btn,
+        .write-btn {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            background: var(--button-bg);
+            /* 배경색 적용 */
+            border: 0.1px solid rgba(0, 0, 0, 0.05);
+            /* 테두리 적용 */
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            right: 20px;
+        }
+
+        .locate-btn i,
+        .write-btn i {
+            color: var(--button-icon-color);
+            /* 아이콘 색상 적용 */
+            font-size: 20px;
+            /* 아이콘 크기 조정 */
+        }
+
+        .locate-btn {
+            bottom: 270px;
+        }
+
+        .write-btn {
+            bottom: 215px;
+        }
+
+        /* --- 슬라이딩 패널 --- */
+        .sliding-panel {
+            position: absolute;
+            top: 660px;
+            left: 0;
+            width: 100%;
+            height: 800px;
+            background-color: var(--hot-panel-bg);
+            z-index: 1050;
+            border-radius: 40px 40px 0 0;
+            box-shadow: 0 -2px 11.3px 0 rgba(0, 0, 0, 0.25);
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sliding-panel.open {
+            transform: translateY(-580px);
+        }
+
+        .panel-header {
+            padding: 20px 20px 10px 20px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .handle {
+            width: 40px;
+            height: 4px;
+            background-color: #E0E0E0;
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+
+        .title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .title-row h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 800;
+            color: #222;
+        }
+
+        .hot-badge {
+            background-color: #F8EB86;
+            color: black;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #9F9E9E;
+            margin: 0;
+        }
+
+        .panel-content {
+            padding: 10px 20px 150px 20px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .main-content-box {
+            width: 100%;
+            height: 155px;
+            background-color: #FAF3BB;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .image-container {
+            position: absolute;
+            left: 15px;
+            top: 13px;
+            width: 130px;
+            height: 128px;
+            background-color: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .info-container {
+            position: absolute;
+            left: 160px;
+            top: 18px;
+            right: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .name-row {
+            display: flex;
+            justify-content: space-between; /* 이름과 하트를 양 끝으로 배치하여 간격 확보 */
+            align-items: center;
+            width: 100%; /* 너비를 꽉 채워야 양 끝으로 벌어집니다 */
+        }
+
+        .place-name {
+            font-size: 17px;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .wish-heart {
+            color: var(--gray-color);
+            cursor: pointer;
+            font-size: 18px;
+            transition: 0.2s;
+        }
+
+        .wish-heart.active {
+            color: var(--heart-pink);
+        }
+
+        .rating-row {
+            margin-top: 4px;
+            color: #FFD700;
+            font-size: 13px;
+        }
+
+        .rating-row span {
+            color: #666;
+            margin-left: 4px;
+            font-weight: 500;
+        }
+
+        .distance-info {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        /* --- 팝업 모달 스타일 --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            width: 320px;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .modal-content h3 {
+            margin: 0;
+            font-size: 18px;
+            text-align: center;
+            color: #333;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-group label {
+            font-size: 12px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .input-group input,
+        .input-group textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .toggle-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .save-btn {
+            background: var(--heart-pink);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 85px;
+            background: white;
+            z-index: 1100;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--gray-color);
+            gap: 4px;
+        }
+
+        .nav-item.active {
+            color: var(--active-pink);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+        <div class="top-interface">
+            <div class="search-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-input" placeholder="검색어를 입력해주세요." autocomplete="off">
+            </div>
+            <button class="route-btn">
+                <img src="../img/길찾기버튼.svg" alt="길찾기" style="width:100%; height:100%; object-fit:cover;">
+            </button>
+        </div>
+
+        <div id="map"></div>
+
+        <button class="locate-btn" onclick="findMyLocation()">
+            <i class="fa-solid fa-location-crosshairs"></i>
+        </button>
+
+        <button class="write-btn" onclick="openWriteModal()">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+
+        <div class="sliding-panel" id="sliding-panel">
+            <div class="panel-header" onclick="togglePanel()">
+                <div class="handle"></div>
+                <div class="title-row">
+                    <h2>내 주변 인기 장소</h2>
+                    <span class="hot-badge">HOT</span>
+                </div>
+                <p class="subtitle">지금 가장 인기있는 장소</p>
+            </div>
+            <div class="panel-content">
+                <div class="main-content-box" onclick="moveMapTo(37.5238, 126.9804, '국립중앙박물관')">
+                    <div class="image-container"><img src="../img/국립중앙박물관.png" alt="이미지"></div>
+                    <div class="info-container">
+                        <div class="name-row">
+                            <span class="place-name">국립중앙박물관</span>
+                            <i class="fa-regular fa-heart wish-heart" onclick="toggleHeart(this, event)"></i>
+                        </div>
+                        <div class="distance-info">여기서 3.4km</div>
+                        <div class="rating-row"><i class="fa-solid fa-star"></i>  <span>4.8</span></div>
+                    </div>
+                </div>
+
+                <div class="main-content-box" onclick="moveMapTo(37.5756, 126.9831, '서울공예박물관')">
+                    <div class="image-container">
+                        <img src="../img/서울공예박물관.png" alt="이미지">
+                    </div>
+                    <div class="info-container">
+                        <div class="name-row">
+                            <span class="place-name">서울공예박물관</span>
+                            <i class="fa-regular fa-heart wish-heart" onclick="toggleHeart(this, event)"></i>
+                        </div>
+                        <div class="distance-info">여기서 1.2km</div>
+                        <div class="rating-row">
+                            <i class="fa-solid fa-star"></i> <span>4.6</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="main-content-box" onclick="moveMapTo(37.5297, 126.9648, '아이파크몰 용산점')">
+                    <div class="image-container">
+                        <img src="../img/아이파크몰 용산점.png" alt="이미지">
+                    </div>
+                    <div class="info-container">
+                        <div class="name-row">
+                            <span class="place-name">아이파크몰 용산점</span>
+                            <i class="fa-regular fa-heart wish-heart" onclick="toggleHeart(this, event)"></i>
+                        </div>
+                        <div class="distance-info">여기서 2.1km</div>
+                        <div class="rating-row">
+                            <i class="fa-solid fa-star"></i> <span>4.4</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="main-content-box" onclick="moveMapTo(37.5244, 126.9361, '현대백화점 더현대')">
+                    <div class="image-container">
+                        <img src="../img/현대백화점 더현대.png" alt="이미지">
+                    </div>
+                    <div class="info-container">
+                        <div class="name-row">
+                            <span class="place-name">현대백화점 더 현대</span>
+                            <i class="fa-regular fa-heart wish-heart" onclick="toggleHeart(this, event)"></i>
+                        </div>
+                        <div class="distance-info">여기서 2.1km</div>
+                        <div class="rating-row">
+                            <i class="fa-solid fa-star"></i> <span>4.4</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="modal-overlay">
+            <div class="modal-content">
+                <h3>새로운 장소 기록</h3>
+
+                <div class="input-group">
+                    <label>사진 등록</label>
+                    <input type="file" id="place-photo" accept="image/*">
+                </div>
+
+                <div class="input-group">
+                    <label>현재 위치 주소</label>
+                    <input type="text" id="place-address" readonly placeholder="위치를 찾는 중...">
+                </div>
+
+                <div class="input-group">
+                    <label>장소 이름</label>
+                    <input type="text" id="place-name-input" placeholder="장소 이름을 입력하세요">
+                </div>
+
+                <div class="input-group">
+                    <label>메모</label>
+                    <textarea id="place-memo" rows="3" placeholder="기억하고 싶은 내용을 적어주세요"></textarea>
+                </div>
+
+                <div class="toggle-group">
+                    <span>나만보기</span>
+                    <input type="checkbox" id="private-toggle">
+                </div>
+
+                <button class="save-btn" onclick="saveRecord()">저장하기</button>
+                <button style="background:none; border:none; color:#999; cursor:pointer; font-size:12px;"
+                    onclick="closeWriteModal()">닫기</button>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i><span>홈</span></a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-users"></i><span>게시판</span></a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-heart"></i><span>찜</span></a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-user"></i><span>마이페이지</span></a>
+        </nav>
+    </div>
+
+    <script>
+        var map = L.map('map', { zoomControl: false }).setView([37.5665, 126.9780], 16);
+        L.tileLayer('https://mt1.google.com/vt/lyrs=m&hl=ko&x={x}&y={y}&z={z}').addTo(map);
+
+        function togglePanel() {
+            document.getElementById('sliding-panel').classList.toggle('open');
+        }
+
+        function toggleHeart(element, event) {
+            event.stopPropagation();
+            element.classList.toggle('fa-regular');
+            element.classList.toggle('fa-solid');
+            element.classList.toggle('active');
+        }
+
+        var searchMarker;
+        function moveMapTo(lat, lon, name) {
+            map.setView([lat, lon], 16);
+            if (searchMarker) map.removeLayer(searchMarker);
+            searchMarker = L.marker([lat, lon]).addTo(map).bindPopup(name).openPopup();
+            document.getElementById('sliding-panel').classList.remove('open');
+        }
+
+        function findMyLocation() {
+            map.locate({ setView: true, maxZoom: 16 });
+        }
+
+        map.on('locationfound', function (e) {
+            L.circleMarker(e.latlng, { radius: 8, color: 'white', weight: 3, fillColor: '#4285F4', fillOpacity: 1 }).addTo(map);
+            document.getElementById('place-address').value = `위도: ${e.latlng.lat.toFixed(4)}, 경도: ${e.latlng.lng.toFixed(4)}`;
+        });
+
+        // 팝업 관련 함수
+        function openWriteModal() {
+            document.getElementById('modal-overlay').style.display = 'flex';
+            map.locate();
+        }
+
+        function closeWriteModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+        }
+
+        function saveRecord() {
+            const name = document.getElementById('place-name-input').value;
+            const address = document.getElementById('place-address').value;
+            const memo = document.getElementById('place-memo').value;
+            const isPrivate = document.getElementById('private-toggle').checked;
+
+            if (!name) {
+                alert("장소 이름을 입력해주세요!");
+                return;
+            }
+
+            console.log("저장된 데이터:", { name, address, memo, isPrivate });
+            alert("성공적으로 저장되었습니다!");
+            closeWriteModal();
+        }
+    </script>
+</body>
+
+</html>
