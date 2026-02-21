@@ -234,41 +234,87 @@
         }
 
         // --- 3. 마커 표시 함수 (디자인 개선) ---
-        function displayPOIMarkers(pois) {
+        // --- 2. POI API 연동 함수 ---
+        async function fetchPOIs() {
+            clearTimeout(poiDebounceTimer);
+
+            poiDebounceTimer = setTimeout(async () => {
+                const center = map.getCenter();
+                const lat = center.lat;
+                const lng = center.lng;
+
+                // 제공해주신 명세에 따른 API URL (카테고리 필터는 예시로 'recommended' 사용 가능)
+                // 만약 전체 조회를 원하시면 category 파라미터를 빼거나 수정하세요.
+                const API_URL = `http://10.55.203.188:8080/api/places?lat=${lat}&lng=${lng}`;
+
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'GET',
+                        headers: { 'accept': '*/*' }
+                    });
+                    const result = await response.json();
+
+                    if (result.success && result.data) {
+                        // 지도 마커와 슬라이딩 패널 리스트를 동시에 업데이트
+                        displayPOIMarkers(result.data);
+                    }
+                } catch (error) {
+                    console.error("장소 데이터를 불러오는 중 오류 발생:", error);
+                }
+            }, 500);
+        }
+
+        // --- 3. 마커 및 슬라이딩 패널 리스트 표시 함수 ---
+        function displayPOIMarkers(places) {
+            // 1. 기존 지도 마커 제거
             poiLayer.clearLayers();
 
-            // --- [추가] 슬라이딩 패널 리스트 업데이트 로직 ---
+            // 2. 슬라이딩 패널 컨테이너 선택
             const listContainer = document.querySelector('.panel-content');
-            listContainer.innerHTML = ''; // 기존 하드코딩된 내용 삭제
 
-            pois.forEach(poi => {
-                // 1. 지도 마커 생성 (기존 로직)
-                const marker = L.marker([poi.lat, poi.lng]).addTo(poiLayer);
-                marker.bindPopup(`<b>${poi.name}</b><br>★ ${poi.rating || '0.0'}`);
+            // 데이터가 없을 경우 처리
+            if (!places || places.length === 0) {
+                listContainer.innerHTML = '<p style="padding:40px; text-align:center; color:#888;">주변에 등록된 장소가 없습니다.</p>';
+                return;
+            }
 
-                // 2. 슬라이딩 패널용 아이템 생성 (새로 추가)
-                const isSaved = poi.isSaved; // API 응답의 isSaved 상태
+            // 기존 리스트 비우기
+            listContainer.innerHTML = '';
+
+            places.forEach(place => {
+                // --- (1) 지도에 마커 추가 ---
+                const marker = L.marker([place.lat, place.lng]).addTo(poiLayer);
+                marker.bindPopup(`<b>${place.name}</b><br>${place.description || ''}`);
+
+                // --- (2) 슬라이딩 패널에 카드 추가 ---
                 const placeBox = document.createElement('div');
                 placeBox.className = 'main-content-box';
 
-                // 클릭 시 해당 위치로 지도 이동
-                placeBox.onclick = () => moveMapTo(poi.lat, poi.lng, poi.name);
+                // 카드 클릭 시 해당 위치로 이동
+                placeBox.onclick = () => moveMapTo(place.lat, place.lng, place.name);
+
+                // API 응답 데이터 매핑
+                const imageUrl = (place.imageUrl && place.imageUrl !== 'string')
+                    ? place.imageUrl
+                    : 'img/default.png'; // 기본 이미지 경로
+                const rating = place.rating || '0.0';
+                const isSaved = place.isSaved; // 찜 상태
 
                 placeBox.innerHTML = `
             <div class="image-container">
-                <img src="${poi.imageUrl && poi.imageUrl !== 'string' ? poi.imageUrl : 'img/default.png'}" 
-                     onerror="this.src='https://placehold.co/100x100?text=No+Image'">
+                <img src="${imageUrl}" onerror="this.src='https://placehold.co/100x100?text=No+Image'">
             </div>
             <div class="info-container">
                 <div class="name-row">
-                    <span class="place-name">${poi.name}</span>
+                    <span class="place-name">${place.name}</span>
                     <i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-heart wish-heart" 
                        style="${isSaved ? 'color: #ff4d4d;' : ''}"
-                       onclick="toggleHeart(this, event, '${poi.id}')"></i>
+                       onclick="toggleHeart(this, event, '${place.id}')"></i>
                 </div>
-                <div class="distance-info">${poi.description || '상세 정보가 없습니다.'}</div>
+                <div class="distance-info">${place.description || '장소 설명이 없습니다.'}</div>
                 <div class="rating-row">
-                    <i class="fa-solid fa-star"></i> <span>${poi.rating || '0.0'}</span>
+                    <i class="fa-solid fa-star"></i> <span>${rating}</span>
+                    ${place.tags ? `<span class="tag-text" style="margin-left:8px; font-size:11px; color:#999;">#${place.tags[0] || ''}</span>` : ''}
                 </div>
             </div>
         `;
