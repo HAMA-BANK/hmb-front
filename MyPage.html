@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HaMap - 마이페이지</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        :root {
+            --active-pink: #FFCFE1;
+            --gray-color: #B8B6B6;
+            --light-bg: #F9F9F9;
+            --card-bg: #FFF5D6; /* 게시글 카드의 연노란색 배경 */
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        .app-container {
+            position: relative;
+            width: 393px;
+            height: 852px;
+            background: white;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- 마이페이지 헤더 --- */
+        .mypage-header {
+            padding: 60px 24px 30px;
+        }
+        .mypage-header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 0 0 30px 0;
+        }
+
+        /* 프로필 정보 */
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .profile-img-wrapper {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 1px solid #EEE;
+            background-color: #f0f0f0;
+        }
+        .profile-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-info .nickname {
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0;
+            display: block;
+        }
+        .profile-info .handle {
+            font-size: 14px;
+            color: var(--gray-color);
+            margin: 2px 0 8px 0;
+            display: block;
+        }
+        .edit-btn {
+            background: #EFEFEF;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+        }
+
+        /* --- 통계 바 --- */
+        .stats-bar {
+            display: flex;
+            border-top: 1.5px solid #F8EB86;
+            border-bottom: 1.5px solid #F8EB86;
+            padding: 15px 0;
+            margin-top: 20px;
+        }
+        .stat-item {
+            flex: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .stat-item .count { font-size: 18px; font-weight: 800; }
+        .stat-item .label { font-size: 13px; color: var(--gray-color); }
+        .stat-item.heart { color: #FFB5D0; } /* 내 저장 하트 색상 */
+
+        /* --- 내가 작성한 게시글 --- */
+        .my-posts-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+        .my-posts-section h2 {
+            font-size: 18px;
+            font-weight: 800;
+            margin: 0 0 20px 0;
+        }
+
+        .post-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-bottom: 20px;
+        }
+
+        .post-item-card {
+            background-color: var(--card-bg);
+            border-radius: 25px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+
+        .post-thumb {
+            width: 75px;
+            height: 75px;
+            border-radius: 15px;
+            overflow: hidden;
+            background-color: #DDD;
+        }
+        .post-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+        .post-text-info .post-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .post-text-info .post-desc {
+            font-size: 12px;
+            color: #888;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="mypage-header">
+            <h1>마이페이지</h1>
+            <div class="profile-section">
+                <div class="profile-img-wrapper">
+                    <img src="img/하마.png" alt="프로필 사진">
+                </div>
+                <div class="profile-info">
+                    <span class="nickname">행복한 하마</span>
+                    <span class="handle">@happy_hippo</span>
+                    <button class="edit-btn" onclick="location.href='ProfileEdit.html'">프로필 수정</button>                </div>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="count">19</span>
+                <span class="label">저장</span>
+            </div>
+            <div class="stat-item" style="border-left: 1px solid #F5F5F5; border-right: 1px solid #F5F5F5;">
+                <span class="count">3</span>
+                <span class="label">게시글</span>
+            </div>
+            <div class="stat-item heart">
+                <i class="fa-solid fa-heart" style="font-size: 18px;"></i>
+                <span class="label" style="margin-top:2px;">내 저장</span>
+            </div>
+        </div>
+
+        <div class="my-posts-section">
+            <h2>내가 작성한 게시글</h2>
+            <div class="post-list">
+                <div class="post-item-card">
+                    <div class="post-thumb"><img src="img/국립중앙박물관.png" alt="박물관"></div>
+                    <div class="post-text-info">
+                        <span class="post-title">국립중앙박물관</span>
+                        <span class="post-desc">친구들과 함께 다녀온 박물관!</span>
+                    </div>
+                </div>
+                <div class="post-item-card">
+                    <div class="post-thumb"><img src="img/성수동 숨은 카페.png" alt="카페"></div>
+                    <div class="post-text-info">
+                        <span class="post-title">비 오는 날 카페</span>
+                        <span class="post-desc">친구들과 함께 다녀온 카페!</span>
+                    </div>
+                </div>
+                <div class="post-item-card">
+                    <div class="post-thumb"><img src="img/한강.png" alt="한강"></div>
+                    <div class="post-text-info">
+                        <span class="post-title">한강 피크닉</span>
+                        <span class="post-desc">친구들과 함께 다녀온 한강 피크닉!</span>
+                    </div>
+                </div>
+                <div class="post-item-card">
+                    <div class="post-thumb"><img src="img/남산.png" alt="남산"></div>
+                    <div class="post-text-info">
+                        <span class="post-title">남산 야경</span>
+                        <span class="post-desc">친구들과 함께 다녀온 남산!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="main.html" class="nav-item"><i class="fa-solid fa-house"></i><span>홈</span></a>
+            <a href="Community.html" class="nav-item"><i class="fa-solid fa-users"></i><span>게시판</span></a>
+            <a href="Save.html" class="nav-item"><i class="fa-solid fa-heart"></i><span>찜</span></a>
+            <a href="MyPage.html" class="nav-item active"><i class="fa-solid fa-user"></i><span>마이페이지</span></a>
+        </nav>
+    </div>
+</body>
+</html>
