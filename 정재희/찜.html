@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>저장 목록 - 놀거리</title>
+    <title>저장 목록</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -36,7 +36,7 @@
             flex-direction: column;
         }
 
-        /* --- 공통 헤더 스타일 --- */
+        /* --- 헤더 --- */
         .save-header {
             padding: 60px 24px 20px;
             display: flex;
@@ -64,9 +64,10 @@
             cursor: pointer;
             border: none;
             background: none;
+            padding: 0;
         }
 
-        /* --- 메인 그리드 리스트 --- */
+        /* --- 메인 그리드 --- */
         .grid-container {
             flex: 1;
             overflow-y: auto;
@@ -89,12 +90,19 @@
             transition: all 0.2s;
         }
 
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+        }
+
         .save-card:active {
             transform: scale(0.96);
             background-color: #FBECC3;
         }
 
-        /* --- 놀거리 상세 리스트 (스크린샷 디자인) --- */
+        /* --- 상세 리스트 (오류 수정 부분) --- */
         .detail-container {
             flex: 1;
             overflow-y: auto;
@@ -102,6 +110,7 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+            padding-bottom: 100px;
         }
 
         .place-card {
@@ -112,7 +121,6 @@
             align-items: center;
             gap: 15px;
             position: relative;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
         }
 
         .place-img {
@@ -120,10 +128,6 @@
             height: 100px;
             border-radius: 25px;
             object-fit: cover;
-        }
-
-        .place-info {
-            flex: 1;
         }
 
         .place-info .name {
@@ -137,24 +141,20 @@
             font-size: 12px;
             color: #777;
             line-height: 1.4;
-            margin-bottom: 8px;
-
-            /* 표준 속성 및 말줄임 설정 */
+            /* line-clamp 관련 오류 수정 코드 */
             display: -webkit-box;
-            -webkit-box-orient: vertical !important;
+            -webkit-box-orient: vertical;
             -webkit-line-clamp: 2;
-            /* 구형 브라우저 호환성 */
-            line-clamp: 2;
-            /* 표준 속성: 오류 메시지 해결 */
-
+            line-clamp: 2; /* 표준 속성 추가 */
             overflow: hidden;
             text-overflow: ellipsis;
-            word-break: break-all;
         }
 
         .place-info .location {
             font-size: 11px;
             color: var(--gray-color);
+            margin-top: 4px;
+            display: block;
         }
 
         .heart-btn {
@@ -165,7 +165,7 @@
             font-size: 18px;
         }
 
-        /* --- 하단 네비게이션 --- */
+        /* --- 네비게이션 --- */
         .bottom-nav {
             height: 85px;
             background: white;
@@ -198,9 +198,7 @@
             font-weight: 600;
         }
 
-        /* 화면 전환용 */
-        #main-view,
-        #detail-view {
+        #main-view, #detail-view {
             display: flex;
             flex-direction: column;
             height: 100%;
@@ -215,60 +213,62 @@
         <div id="main-view">
             <div class="save-header">
                 <h1 class="header-title">저장 목록</h1>
-                <div style="font-size: 14px; font-weight: 600;">총 <span style="color: var(--heart-pink);">2</span>개
-                </div>
+                <div style="font-size: 14px; font-weight: 600;">총 <span style="color: var(--heart-pink);">2</span>개</div>
             </div>
             <div class="grid-container">
-                <div class="save-card">
-                    <div class="header-title" style="font-size:18px;">전체</div><span>2개 장소</span>
+                <div class="save-card" onclick="toggleView('detail', '전체')">
+                    <div class="card-top">
+                        <span class="header-title" style="font-size:18px;">전체</span>
+                        <i class="fa-solid fa-chevron-right" style="color:#666; font-size: 14px;"></i>
+                    </div>
+                    <span>2개 장소</span>
                 </div>
+
                 <div class="save-card">
                     <div class="header-title" style="font-size:18px;">맛집</div><span>0개 장소</span>
                 </div>
                 <div class="save-card">
                     <div class="header-title" style="font-size:18px;">카페</div><span>0개 장소</span>
                 </div>
-                <div class="save-card" onclick="toggleView('detail')">
-                    <div style="display:flex; justify-content:space-between; width:100%;">
+
+                <div class="save-card" onclick="toggleView('detail', '놀거리')">
+                    <div class="card-top">
                         <span class="header-title" style="font-size:18px;">놀거리</span>
-                        <i class="fa-solid fa-chevron-right" style="color:#666;"></i>
+                        <i class="fa-solid fa-chevron-right" style="color:#666; font-size: 14px;"></i>
                     </div>
                     <span>2개 장소</span>
                 </div>
+
                 <div class="save-card">
                     <div class="header-title" style="font-size:18px;">편의점</div><span>0개 장소</span>
                 </div>
                 <div class="save-card">
                     <div class="header-title" style="font-size:18px;">기타</div><span>0개 장소</span>
                 </div>
-
-
             </div>
         </div>
 
         <div id="detail-view" style="display: none;">
             <div class="detail-header">
                 <button class="back-btn" onclick="toggleView('main')"><i class="fa-solid fa-arrow-left"></i></button>
-                <h1 class="header-title">놀거리</h1>
+                <h1 class="header-title" id="detail-title">놀거리</h1>
             </div>
             <div class="detail-container">
                 <div class="place-card">
-                    <img src="../img/국립중앙박물관.png"
-                        class="place-img">
+                    <img src="../img/국립중앙박물관.png" class="place-img">
                     <div class="place-info">
                         <span class="name">국립중앙박물관</span>
-                        <p class="desc">친구들과 함께 조용히 전시 감상하기 좋은 곳이에요! 평소에...</p>
+                        <p class="desc">친구들과 함께 조용히 전시 감상하기 좋은 곳이에요! 평소에 보지 못한 유물들을 보며 힐링하세요.</p>
                         <span class="location">서울, 박물관</span>
                     </div>
                     <i class="fa-solid fa-heart heart-btn"></i>
                 </div>
 
                 <div class="place-card">
-                    <img src="../img/한강.png"
-                        class="place-img">
+                    <img src="../img/한강.png" class="place-img">
                     <div class="place-info">
                         <span class="name">한강 피크닉</span>
-                        <p class="desc">친구들과 함께 조용히 사람 구경하기 좋은 곳이에요 돗자리...</p>
+                        <p class="desc">친구들과 함께 조용히 사람 구경하기 좋은 곳이에요 돗자리 펴고 맛있는 음식을 먹어보세요.</p>
                         <span class="location">서울, 한강</span>
                     </div>
                     <i class="fa-solid fa-heart heart-btn"></i>
@@ -285,13 +285,18 @@
     </div>
 
     <script>
-        function toggleView(view) {
+        function toggleView(view, title) {
+            const mainView = document.getElementById('main-view');
+            const detailView = document.getElementById('detail-view');
+            const detailTitle = document.getElementById('detail-title');
+
             if (view === 'detail') {
-                document.getElementById('main-view').style.display = 'none';
-                document.getElementById('detail-view').style.display = 'flex';
+                mainView.style.display = 'none';
+                detailView.style.display = 'flex';
+                if (title) detailTitle.innerText = title;
             } else {
-                document.getElementById('main-view').style.display = 'flex';
-                document.getElementById('detail-view').style.display = 'none';
+                mainView.style.display = 'flex';
+                detailView.style.display = 'none';
             }
         }
     </script>

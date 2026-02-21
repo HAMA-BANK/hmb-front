@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 상세</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --active-pink: #FFCFE1;
+            --bg-pink: #ffffff; /* 시안의 연한 핑크 배경색 */
+            --gray-color: #B8B6B6;
+            --text-black: #333;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: white;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        .app-container {
+            position: relative;
+            width: 393px;
+            height: 852px;
+            background: var(--bg-pink); /* 배경색 적용 */
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        /* --- 헤더 --- */
+        .detail-header {
+            display: flex;
+            align-items: center;
+            padding: 50px 24px 20px;
+            z-index: 10;
+        }
+        .back-btn { font-size: 20px; cursor: pointer; color: var(--text-black); border:none; background:none; }
+        .header-title { flex: 1; text-align: center; font-size: 20px; font-weight: 800; margin-right: 20px; }
+
+        /* --- 콘텐츠 영역 --- */
+        .content-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 24px 100px;
+            z-index: 5;
+        }
+
+        /* 작성자 프로필 */
+        .author-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .author-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #eee;
+            overflow: hidden;
+        }
+        .author-img img { width: 100%; height: 100%; object-fit: cover; }
+        .author-name { font-weight: 700; font-size: 15px; }
+        .post-time { font-size: 12px; color: #999; margin-top: 2px; }
+
+        /* 게시글 내용 */
+        .post-main-info h2 { font-size: 22px; font-weight: 800; margin: 0 0 8px 0; }
+        .post-main-info p { font-size: 14px; color: #666; margin: 0 0 20px 0; }
+
+        .main-img-wrapper {
+            width: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .main-img-wrapper img { width: 100%; display: block; }
+
+        /* 반응 지표 (하트, 댓글) */
+        .reaction-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            color: #B8B6B6;
+            font-size: 14px;
+        }
+        .reaction-item { display: flex; align-items: center; gap: 5px; }
+
+        /* 댓글 섹션 */
+        .comment-section h3 { font-size: 16px; font-weight: 800; margin-bottom: 20px; }
+        .comment-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .comment-avatar { width: 35px; height: 35px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }
+        .comment-content .c-user { font-weight: 700; font-size: 14px; margin-right: 5px; }
+        .comment-content .c-time { font-size: 11px; color: #BBB; }
+        .comment-content .c-text { font-size: 14px; color: #444; margin-top: 4px; line-height: 1.4; }
+
+        /* 댓글 입력창 */
+        .comment-input-area {
+            position: absolute;
+            bottom: 100px;
+            left: 24px;
+            right: 24px;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 10px 15px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .comment-input-area input {
+            border: none;
+            background: none;
+            flex: 1;
+            font-size: 14px;
+            outline: none;
+        }
+        .mini-profile { width: 24px; height: 24px; border-radius: 50%; }
+
+        /* --- 하단 네비게이션 (MyPage와 동일) --- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0; width: 100%;
+            height: 85px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #eee;
+            padding-bottom: 15px;
+            z-index: 20;
+        }
+        .nav-item { text-decoration: none; display: flex; flex-direction: column; align-items: center; color: var(--gray-color); }
+        .nav-item.active { color: var(--active-pink); }
+        .nav-item i { font-size: 22px; margin-bottom: 4px; }
+        .nav-item span { font-size: 10px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+
+        <header class="detail-header">
+            <button class="back-btn" onclick="history.back()"><i class="fa-solid fa-arrow-left"></i></button>
+            <div class="header-title">게시글</div>
+        </header>
+
+        <main class="content-scroll">
+            <section class="author-section">
+                <div class="author-img">
+                    <img src="../img/하마.png" alt="프로필">
+                </div>
+                <div>
+                    <div class="author-name">행복한 하마</div>
+                    <div class="post-time">한시간 전</div>
+                </div>
+            </section>
+
+            <section class="post-main-info">
+                <h2>국립중앙박물관</h2>
+                <p>친구들과 함께 다녀온 박물관!</p>
+                <div class="main-img-wrapper">
+                    <img src="../img/국립중앙박물관.png" alt="박물관 사진">
+                </div>
+            </section>
+
+            <div class="reaction-bar">
+                <div class="reaction-item"><i class="fa-regular fa-heart"></i> 486</div>
+                <div class="reaction-item"><i class="fa-regular fa-comment"></i> 2</div>
+            </div>
+
+            <section class="comment-section">
+                <h3>댓글 2</h3>
+                
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background-color: #555;"><i class="fa-solid fa-user"></i></div>
+                    <div class="comment-content">
+                        <span class="c-user">초코라떼</span><span class="c-time">방금 전</span>
+                        <div class="c-text">정보 감사합니다! 꼭 가봐야겠어요.</div>
+                    </div>
+                </div>
+
+                <div class="comment-item">
+                    <div class="comment-avatar" style="background-color: #777;"><i class="fa-solid fa-user"></i></div>
+                    <div class="comment-content">
+                        <span class="c-user">Re자몽</span><span class="c-time">1분 전</span>
+                        <div class="c-text">사진 너무 예쁘게 잘 찍으셨네요 ㅎㅅㅎ</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="comment-input-area">
+            <img src="../img/하마.png" class="mini-profile" alt="나">
+            <input type="text" placeholder="댓글을 남겨보세요...">
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i><span>홈</span></a>
+            <a href="게시판.html" class="nav-item"><i class="fa-solid fa-users"></i><span>게시판</span></a>
+            <a href="찜.html" class="nav-item"><i class="fa-solid fa-heart"></i><span>찜</span></a>
+            <a href="MyPage.html" class="nav-item active"><i class="fa-solid fa-user"></i><span>MY</span></a>
+        </nav>
+    </div>
+</body>
+</html>
