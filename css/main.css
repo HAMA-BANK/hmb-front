@@ -315,24 +315,42 @@ body {
 }
 
 /* 사진 등록 영역 */
+/* 사진 업로드 박스 스타일 변경 */
 .photo-upload-box {
     width: 100%;
-    height: 180px;
-    background-color: #F0F0F0;
-    border-radius: 20px;
+    height: 180px; /* 고정 높이 */
+    background-color: #f8f9fa;
+    border: 2px dashed #ddd;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    color: #B8B6B6;
-    font-size: 13px;
-    gap: 10px;
+    overflow: hidden; /* 이미지가 넘치지 않게 */
+    position: relative;
+    transition: all 0.3s ease;
 }
 
-.photo-upload-box i {
-    font-size: 24px;
-    color: #FFB3D1;
+.photo-upload-box:hover {
+    border-color: #ffb6c1;
+}
+
+/* 이미지가 로드되었을 때 보일 스타일 */
+#preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 이미지가 박스에 꽉 차도록 비율 유지 */
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none; /* 초기엔 숨김 */
+}
+
+/* 이미지가 보일 때 아이콘과 텍스트는 숨기기 위한 클래스 */
+.photo-upload-box.has-image i,
+.photo-upload-box.has-image span {
+    display: none;
 }
 
 .input-group {
@@ -412,6 +430,60 @@ body {
     font-size: 11px;
 }
 
+
+/* 나만보기 토글 */
+/* 토글 스위치 전체 컨테이너 */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+/* 기본 체크박스 숨기기 */
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* 슬라이더 배경 */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc; /* 비활성 상태 (회색) */
+    transition: .4s;
+    border-radius: 24px;
+}
+
+/* 동그란 버튼 */
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+/* 체크되었을 때 배경색 (연핑크) */
+.toggle-switch input:checked + .slider {
+    background-color: #ffb6c1; /* 연핑크 (Light Pink) */
+}
+
+/* 체크되었을 때 버튼 이동 */
+.toggle-switch input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+
 /* 저장 버튼 */
 .save-btn {
     background: #F1A3C1;
@@ -488,3 +560,42 @@ body {
 
 .search-item .main-name { font-weight: bold; color: #222; }
 .search-item .sub-address { font-size: 11px; color: #999; margin-top: 2px; }
+
+
+
+
+.tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+.tag-chip {
+    display: flex;
+    align-items: center;
+    background: #FFCFE1;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 13px;
+}
+
+.tag-chip i {
+    margin-left: 6px;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+#tag-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    flex: 1;
+    min-width: 100px;
+    padding: 0;
+    margin: 0;
+}

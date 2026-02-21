@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +13,8 @@
             --active-pink: #FFCFE1;
             --gray-color: #B8B6B6;
             --light-bg: #F9F9F9;
-            --card-bg: #FFF5D6; /* 게시글 카드의 연노란색 배경 */
+            --card-bg: #FFF5D6;
+            /* 게시글 카드의 연노란색 배경 */
         }
 
         body {
@@ -40,6 +42,7 @@
         .mypage-header {
             padding: 60px 24px 30px;
         }
+
         .mypage-header h1 {
             font-size: 24px;
             font-weight: 800;
@@ -52,6 +55,7 @@
             align-items: center;
             gap: 20px;
         }
+
         .profile-img-wrapper {
             width: 80px;
             height: 80px;
@@ -60,23 +64,27 @@
             border: 1px solid #EEE;
             background-color: #f0f0f0;
         }
+
         .profile-img-wrapper img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
+
         .profile-info .nickname {
             font-size: 20px;
             font-weight: 800;
             margin: 0;
             display: block;
         }
+
         .profile-info .handle {
             font-size: 14px;
             color: var(--gray-color);
             margin: 2px 0 8px 0;
             display: block;
         }
+
         .edit-btn {
             background: #EFEFEF;
             border: none;
@@ -96,6 +104,7 @@
             padding: 15px 0;
             margin-top: 20px;
         }
+
         .stat-item {
             flex: 1;
             text-align: center;
@@ -103,9 +112,22 @@
             flex-direction: column;
             gap: 4px;
         }
-        .stat-item .count { font-size: 18px; font-weight: 800; }
-        .stat-item .label { font-size: 13px; color: var(--gray-color); }
-        .stat-item.heart { color: #FFB5D0; } /* 내 저장 하트 색상 */
+
+        .stat-item .count {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .stat-item .label {
+            font-size: 13px;
+            color: var(--gray-color);
+        }
+
+        .stat-item.heart {
+            color: #FFB5D0;
+        }
+
+        /* 내 저장 하트 색상 */
 
         /* --- 내가 작성한 게시글 --- */
         .my-posts-section {
@@ -113,6 +135,7 @@
             overflow-y: auto;
             padding: 24px;
         }
+
         .my-posts-section h2 {
             font-size: 18px;
             font-weight: 800;
@@ -143,7 +166,12 @@
             overflow: hidden;
             background-color: #DDD;
         }
-        .post-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+        .post-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
         .post-text-info .post-title {
             font-size: 16px;
@@ -151,13 +179,14 @@
             margin-bottom: 4px;
             display: block;
         }
+
         .post-text-info .post-desc {
             font-size: 12px;
             color: #888;
         }
-
     </style>
 </head>
+
 <body>
     <div class="app-container">
         <div class="mypage-header">
@@ -169,7 +198,8 @@
                 <div class="profile-info">
                     <span class="nickname">행복한 하마</span>
                     <span class="handle">@happy_hippo</span>
-                    <button class="edit-btn" onclick="location.href='ProfileEdit.html'">프로필 수정</button>                </div>
+                    <button class="edit-btn" onclick="location.href='ProfileEdit.html'">프로필 수정</button>
+                </div>
             </div>
         </div>
 
@@ -229,5 +259,111 @@
             <a href="MyPage.html" class="nav-item active"><i class="fa-solid fa-user"></i><span>마이페이지</span></a>
         </nav>
     </div>
+
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1. API 호출을 통해 내 프로필 정보를 가져옵니다.
+            fetch('/api/users/me')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('네트워크 응답에 문제가 있습니다.');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if (result.success && result.data) {
+                        const userData = result.data;
+
+                        // 2. DOM 요소 선택 (HTML 내의 해당 클래스/태그 매칭)
+                        const nicknameElement = document.querySelector('.profile-info .nickname');
+                        const handleElement = document.querySelector('.profile-info .handle');
+                        const profileImgElement = document.querySelector('.profile-img-wrapper img');
+
+                        // 3. API 데이터로 화면 업데이트
+                        // displayName -> '서울토박이'
+                        if (nicknameElement) nicknameElement.textContent = userData.displayName;
+
+                        // username -> '@seoul_native'
+                        if (handleElement) handleElement.textContent = `@${userData.username}`;
+
+                        // avatarUrl이 존재할 경우에만 이미지 교체 (기본 이미지 유지 로직)
+                        if (userData.avatarUrl && userData.avatarUrl !== "string" && profileImgElement) {
+                            profileImgElement.src = userData.avatarUrl;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('프로필 정보를 불러오는 중 오류 발생:', error);
+                    // 오류 발생 시 사용자에게 알림을 주거나 기본값을 유지합니다.
+                });
+        });
+
+
+
+
+
+
+
+
+    // ==== 내가 쓴 게시글
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1. 프로필 정보 연동 (이전 단계)
+            fetch('/api/users/me')
+                .then(res => res.json())
+                .then(result => {
+                    if (result.success && result.data) {
+                        document.querySelector('.profile-info .nickname').textContent = result.data.displayName;
+                        document.querySelector('.profile-info .handle').textContent = `@${result.data.username}`;
+                    }
+                });
+
+            // 2. 내가 작성한 게시글 목록 연동
+            fetch('/api/users/me/posts')
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success && result.data) {
+                        const postList = result.data;
+
+                        // (1) 통계 바의 게시글 수 업데이트
+                        const postCountElement = document.querySelector('.stat-item:nth-child(2) .count');
+                        if (postCountElement) {
+                            postCountElement.textContent = postList.length;
+                        }
+
+                        // (2) 게시글 리스트 생성
+                        const postListContainer = document.querySelector('.post-list');
+                        if (postListContainer) {
+                            // 기존에 하드코딩된 리스트 비우기
+                            postListContainer.innerHTML = '';
+
+                            postList.forEach(post => {
+                                // API 데이터가 "string"일 경우 대비해 기본 이미지 처리
+                                const displayImg = (post.imageUrl && post.imageUrl !== "string")
+                                    ? post.imageUrl
+                                    : 'img/default-post.png'; // 기본 이미지 경로
+
+                                const postHtml = `
+                                <div class="post-item-card" onclick="location.href='postDetail.html?id=${post.id}'">
+                                    <div class="post-thumb">
+                                        <img src="${displayImg}" alt="${post.title}">
+                                    </div>
+                                    <div class="post-text-info">
+                                        <span class="post-title">${post.title}</span>
+                                        <span class="post-desc">${post.location} · ${post.date}</span>
+                                    </div>
+                                </div>
+                            `;
+                                postListContainer.insertAdjacentHTML('beforeend', postHtml);
+                            });
+                        }
+                    }
+                })
+                .catch(error => console.error('게시글 로드 실패:', error));
+        });
+    </script>
 </body>
+
 </html>
