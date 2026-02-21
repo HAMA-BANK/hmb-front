@@ -50,7 +50,7 @@
         /* --- 상단 검색바 --- */
         .top-interface {
             position: absolute;
-            top: 60px;
+            top: 50px;
             left: 20px;
             right: 20px;
             z-index: 1000;
@@ -64,7 +64,7 @@
             width: 240px;
             height: 50px;
             background: white;
-            border-radius: 15px;
+            border-radius: 30px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
@@ -88,8 +88,8 @@
         }
 
         .route-btn {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border: none;
             border-radius: 15px;
             background-color: transparent;
@@ -135,13 +135,13 @@
         }
 
         .write-btn {
-            bottom: 215px;
+            bottom: 200px;
         }
 
         /* --- 슬라이딩 패널 --- */
         .sliding-panel {
             position: absolute;
-            top: 660px;
+            top: 700px;
             left: 0;
             width: 100%;
             height: 800px;
@@ -169,7 +169,7 @@
             height: 4px;
             background-color: #E0E0E0;
             border-radius: 2px;
-            margin: 0 auto 20px;
+            margin: 0 auto 15px;
         }
 
         .title-row {
@@ -289,84 +289,149 @@
 
         /* --- 팝업 모달 스타일 --- */
         .modal-overlay {
-            position: fixed;
+            position: absolute; /* app-container 기준 */
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            display: none;
+            background: rgba(0, 0, 0, 0.5); /* 배경 어둡게 */
+            z-index: 2000; /* 최상단 배치 */
+            display: none; /* 초기 상태는 숨김 */
             justify-content: center;
             align-items: center;
         }
-
         .modal-content {
-            width: 320px;
+            width: 330px;
             background: white;
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 30px; 
+            padding: 30px 25px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
+            position: relative;
         }
 
         .modal-content h3 {
-            margin: 0;
-            font-size: 18px;
-            text-align: center;
-            color: #333;
+            margin: 0 0 10px 0;
+            font-size: 20px;
+            font-weight: 800;
+            text-align: left; /* 왼쪽 정렬 */
+            color: #222;
+        }
+
+        /* 사진 등록 영역 */
+        .photo-upload-box {
+            width: 100%;
+            height: 180px;
+            background-color: #F0F0F0;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: #B8B6B6;
+            font-size: 13px;
+            gap: 10px;
+        }
+        .photo-upload-box i {
+            font-size: 24px;
+            color: #FFB3D1;
         }
 
         .input-group {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 8px;
         }
 
         .input-group label {
-            font-size: 12px;
-            color: #666;
+            font-size: 14px;
+            color: #222;
             font-weight: bold;
         }
 
-        .input-group input,
-        .input-group textarea {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .toggle-group {
+        /* 입력창 스타일 */
+        .input-with-icon {
+            position: relative;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            font-size: 14px;
+        }
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            color: #FFB3D1;
+            font-size: 16px;
+        }
+        .input-with-icon input {
+            padding-left: 40px !important;
         }
 
+        .modal-content input,
+        .modal-content textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #E0E0E0;
+            border-radius: 12px;
+            font-size: 14px;
+            background-color: #fff;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        /* 나만보기 토글 영역 */
+        .private-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+        .private-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .private-info i {
+            width: 35px;
+            height: 35px;
+            background: #F0F0F0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        .private-text div:first-child { font-weight: bold; font-size: 14px; }
+        .private-text div:last-child { color: #AAA; font-size: 11px; }
+
+        /* 저장 버튼 */
         .save-btn {
-            background: var(--heart-pink);
+            background: #F1A3C1; /* 이미지의 핑크색 */
             color: white;
             border: none;
-            padding: 12px;
-            border-radius: 10px;
+            padding: 16px;
+            border-radius: 15px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            margin-top: 10px;
         }
 
+
+        /*하단 nav*/
         .bottom-nav {
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 85px;
+            height: 69px; 
             background: white;
             z-index: 1100;
             display: flex;
             justify-content: space-around;
-            align-items: center;
+            align-items: center; /* 수직 중앙 정렬 */
             border-top: 1px solid #eee;
-            padding-bottom: 15px;
+            
+            box-sizing: border-box;
         }
 
         .nav-item {
@@ -374,8 +439,21 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center; /* 아이콘과 글자를 수직 중앙에 배치 */
             color: var(--gray-color);
-            gap: 4px;
+            gap: 4px; 
+            flex: 1; /* 각 항목이 동일한 공간을 차지하여 중앙 정렬을 도움 */
+        }
+
+        /* 아이콘 크기 추가 확대 */
+        .nav-item i {
+            font-size: 28px; /* 기존보다 더 키움 */
+        }
+
+        /* 글자 크기 유지 (작게) */
+        .nav-item span {
+            font-size: 10px;
+            font-weight: 500;
         }
 
         .nav-item.active {
@@ -483,33 +561,41 @@
             <div class="modal-content">
                 <h3>새로운 장소 기록</h3>
 
-                <div class="input-group">
-                    <label>사진 등록</label>
-                    <input type="file" id="place-photo" accept="image/*">
+                <div class="photo-upload-box" onclick="document.getElementById('place-photo').click()">
+                    <i class="fa-solid fa-camera"></i>
+                    <span>사진 등록하기</span>
+                    <input type="file" id="place-photo" accept="image/*" style="display:none;">
                 </div>
 
-                <div class="input-group">
-                    <label>현재 위치 주소</label>
-                    <input type="text" id="place-address" readonly placeholder="위치를 찾는 중...">
+                <div class="input-with-icon">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <input type="text" id="place-address" readonly placeholder="현재 위치">
                 </div>
 
                 <div class="input-group">
                     <label>장소 이름</label>
-                    <input type="text" id="place-name-input" placeholder="장소 이름을 입력하세요">
+                    <input type="text" id="place-name-input" placeholder="어떤 장소인가요?">
                 </div>
 
                 <div class="input-group">
                     <label>메모</label>
-                    <textarea id="place-memo" rows="3" placeholder="기억하고 싶은 내용을 적어주세요"></textarea>
+                    <textarea id="place-memo" rows="4" placeholder="이 장소에서의 나만의 추억이나 팁을 적어주세요!"></textarea>
                 </div>
 
-                <div class="toggle-group">
-                    <span>나만보기</span>
-                    <input type="checkbox" id="private-toggle">
+                <div class="private-container">
+                    <div class="private-info">
+                        <i class="fa-solid fa-lock"></i>
+                        <div class="private-text">
+                            <div>나만 보기</div>
+                            <div>내 저장 목록에만 보입니다.</div>
+                        </div>
+                    </div>
+                    <input type="checkbox" id="private-toggle" style="width: 40px; height: 20px;">
                 </div>
 
                 <button class="save-btn" onclick="saveRecord()">저장하기</button>
-                <button style="background:none; border:none; color:#999; cursor:pointer; font-size:12px;"
+                
+                <button style="background:none; border:none; color:#ccc; cursor:pointer; font-size:12px; margin-top:-5px;"
                     onclick="closeWriteModal()">닫기</button>
             </div>
         </div>
