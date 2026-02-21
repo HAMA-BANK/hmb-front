@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
 
     <style>
         :root {
@@ -247,9 +248,11 @@
 
         .name-row {
             display: flex;
-            justify-content: space-between; /* 이름과 하트를 양 끝으로 배치하여 간격 확보 */
+            justify-content: space-between;
+            /* 이름과 하트를 양 끝으로 배치하여 간격 확보 */
             align-items: center;
-            width: 100%; /* 너비를 꽉 채워야 양 끝으로 벌어집니다 */
+            width: 100%;
+            /* 너비를 꽉 채워야 양 끝으로 벌어집니다 */
         }
 
         .place-name {
@@ -289,21 +292,26 @@
 
         /* --- 팝업 모달 스타일 --- */
         .modal-overlay {
-            position: absolute; /* app-container 기준 */
+            position: absolute;
+            /* app-container 기준 */
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5); /* 배경 어둡게 */
-            z-index: 2000; /* 최상단 배치 */
-            display: none; /* 초기 상태는 숨김 */
+            background: rgba(0, 0, 0, 0.5);
+            /* 배경 어둡게 */
+            z-index: 2000;
+            /* 최상단 배치 */
+            display: none;
+            /* 초기 상태는 숨김 */
             justify-content: center;
             align-items: center;
         }
+
         .modal-content {
             width: 330px;
             background: white;
-            border-radius: 30px; 
+            border-radius: 30px;
             padding: 30px 25px;
             display: flex;
             flex-direction: column;
@@ -315,7 +323,8 @@
             margin: 0 0 10px 0;
             font-size: 20px;
             font-weight: 800;
-            text-align: left; /* 왼쪽 정렬 */
+            text-align: left;
+            /* 왼쪽 정렬 */
             color: #222;
         }
 
@@ -334,6 +343,7 @@
             font-size: 13px;
             gap: 10px;
         }
+
         .photo-upload-box i {
             font-size: 24px;
             color: #FFB3D1;
@@ -357,12 +367,14 @@
             display: flex;
             align-items: center;
         }
+
         .input-with-icon i {
             position: absolute;
             left: 15px;
             color: #FFB3D1;
             font-size: 16px;
         }
+
         .input-with-icon input {
             padding-left: 40px !important;
         }
@@ -386,11 +398,13 @@
             justify-content: space-between;
             padding: 5px 0;
         }
+
         .private-info {
             display: flex;
             align-items: center;
             gap: 10px;
         }
+
         .private-info i {
             width: 35px;
             height: 35px;
@@ -401,12 +415,21 @@
             justify-content: center;
             color: #666;
         }
-        .private-text div:first-child { font-weight: bold; font-size: 14px; }
-        .private-text div:last-child { color: #AAA; font-size: 11px; }
+
+        .private-text div:first-child {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .private-text div:last-child {
+            color: #AAA;
+            font-size: 11px;
+        }
 
         /* 저장 버튼 */
         .save-btn {
-            background: #F1A3C1; /* 이미지의 핑크색 */
+            background: #F1A3C1;
+            /* 이미지의 핑크색 */
             color: white;
             border: none;
             padding: 16px;
@@ -415,49 +438,6 @@
             font-weight: bold;
             cursor: pointer;
             margin-top: 10px;
-        }
-
-
-        /*하단 nav*/
-        .bottom-nav {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 69px; 
-            background: white;
-            z-index: 1100;
-            display: flex;
-            justify-content: space-around;
-            align-items: center; /* 수직 중앙 정렬 */
-            border-top: 1px solid #eee;
-            
-            box-sizing: border-box;
-        }
-
-        .nav-item {
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center; /* 아이콘과 글자를 수직 중앙에 배치 */
-            color: var(--gray-color);
-            gap: 4px; 
-            flex: 1; /* 각 항목이 동일한 공간을 차지하여 중앙 정렬을 도움 */
-        }
-
-        /* 아이콘 크기 추가 확대 */
-        .nav-item i {
-            font-size: 28px; /* 기존보다 더 키움 */
-        }
-
-        /* 글자 크기 유지 (작게) */
-        .nav-item span {
-            font-size: 10px;
-            font-weight: 500;
-        }
-
-        .nav-item.active {
-            color: var(--active-pink);
         }
     </style>
 </head>
@@ -471,7 +451,7 @@
                 <input type="text" id="search-input" placeholder="검색어를 입력해주세요." autocomplete="off">
             </div>
             <button class="route-btn">
-                <img src="../img/길찾기버튼.svg" alt="길찾기" style="width:100%; height:100%; object-fit:cover;">
+                <img src="img/길찾기버튼.svg" alt="길찾기" style="width:100%; height:100%; object-fit:cover;">
             </button>
         </div>
 
@@ -496,20 +476,20 @@
             </div>
             <div class="panel-content">
                 <div class="main-content-box" onclick="moveMapTo(37.5238, 126.9804, '국립중앙박물관')">
-                    <div class="image-container"><img src="../img/국립중앙박물관.png" alt="이미지"></div>
+                    <div class="image-container"><img src="img/국립중앙박물관.png" alt="이미지"></div>
                     <div class="info-container">
                         <div class="name-row">
                             <span class="place-name">국립중앙박물관</span>
                             <i class="fa-regular fa-heart wish-heart" onclick="toggleHeart(this, event)"></i>
                         </div>
                         <div class="distance-info">여기서 3.4km</div>
-                        <div class="rating-row"><i class="fa-solid fa-star"></i>  <span>4.8</span></div>
+                        <div class="rating-row"><i class="fa-solid fa-star"></i> <span>4.8</span></div>
                     </div>
                 </div>
 
                 <div class="main-content-box" onclick="moveMapTo(37.5756, 126.9831, '서울공예박물관')">
                     <div class="image-container">
-                        <img src="../img/서울공예박물관.png" alt="이미지">
+                        <img src="img/서울공예박물관.png" alt="이미지">
                     </div>
                     <div class="info-container">
                         <div class="name-row">
@@ -525,7 +505,7 @@
 
                 <div class="main-content-box" onclick="moveMapTo(37.5297, 126.9648, '아이파크몰 용산점')">
                     <div class="image-container">
-                        <img src="../img/아이파크몰 용산점.png" alt="이미지">
+                        <img src="img/아이파크몰 용산점.png" alt="이미지">
                     </div>
                     <div class="info-container">
                         <div class="name-row">
@@ -541,7 +521,7 @@
 
                 <div class="main-content-box" onclick="moveMapTo(37.5244, 126.9361, '현대백화점 더현대')">
                     <div class="image-container">
-                        <img src="../img/현대백화점 더현대.png" alt="이미지">
+                        <img src="img/현대백화점 더현대.png" alt="이미지">
                     </div>
                     <div class="info-container">
                         <div class="name-row">
@@ -594,17 +574,18 @@
                 </div>
 
                 <button class="save-btn" onclick="saveRecord()">저장하기</button>
-                
-                <button style="background:none; border:none; color:#ccc; cursor:pointer; font-size:12px; margin-top:-5px;"
+
+                <button
+                    style="background:none; border:none; color:#ccc; cursor:pointer; font-size:12px; margin-top:-5px;"
                     onclick="closeWriteModal()">닫기</button>
             </div>
         </div>
 
         <nav class="bottom-nav">
-            <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i><span>홈</span></a>
-            <a href="#" class="nav-item"><i class="fa-solid fa-users"></i><span>게시판</span></a>
-            <a href="#" class="nav-item"><i class="fa-solid fa-heart"></i><span>찜</span></a>
-            <a href="#" class="nav-item"><i class="fa-solid fa-user"></i><span>마이페이지</span></a>
+            <a href="main.html" class="nav-item active"><i class="fa-solid fa-house"></i><span>홈</span></a>
+            <a href="Community.html" class="nav-item"><i class="fa-solid fa-users"></i><span>게시판</span></a>
+            <a href="Save.html" class="nav-item"><i class="fa-solid fa-heart"></i><span>찜</span></a>
+            <a href="MyPage.html" class="nav-item"><i class="fa-solid fa-user"></i><span>마이페이지</span></a>
         </nav>
     </div>
 
@@ -665,6 +646,30 @@
             alert("성공적으로 저장되었습니다!");
             closeWriteModal();
         }
+
+
+        //모달팝업에서 현재위치 도로명주소로 입력
+        map.on('locationfound', function (e) {
+            // 지도에 내 위치 표시
+            L.circleMarker(e.latlng, { radius: 8, color: 'white', weight: 3, fillColor: '#4285F4', fillOpacity: 1 }).addTo(map);
+            
+            // --- 도로명 주소 변환 (Reverse Geocoding) 추가 ---
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+            
+            // Nominatim API 호출 (무료 제공 서비스)
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=ko`)
+                .then(response => response.json())
+                .then(data => {
+                    const address = data.display_name;
+                    // 검색된 주소를 입력창에 넣기 (데이터가 없으면 위경도 표시)
+                    document.getElementById('place-address').value = address || `위도: ${lat.toFixed(4)}, 경도: ${lng.toFixed(4)}`;
+                })
+                .catch(error => {
+                    console.error('주소 변환 오류:', error);
+                    document.getElementById('place-address').value = `위도: ${lat.toFixed(4)}, 경도: ${lng.toFixed(4)}`;
+                });
+        });
     </script>
 </body>
 

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 상세</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; font-family: 'Pretendard', sans-serif; }
+        .app-container { position: relative; width: 393px; height: 852px; background: white; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15); overflow: hidden; display: flex; flex-direction: column; }
+        
+        /* 헤더 */
+        .header { padding: 60px 20px 20px; display: flex; align-items: center; gap: 20px; }
+        .header i { font-size: 20px; cursor: pointer; }
+        .header h1 { font-size: 20px; font-weight: 800; margin: 0; flex: 1; text-align: center; margin-right: 40px; }
+
+        .content { flex: 1; overflow-y: auto; padding: 20px; }
+        
+        /* 유저 정보 */
+        .post-user { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .user-icon { width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid #222; display: flex; justify-content: center; align-items: center; font-size: 18px; }
+        .user-info .name { font-size: 15px; font-weight: 700; display: block; }
+        .user-info .time { font-size: 12px; color: #B8B6B6; }
+
+        .post-title { font-size: 20px; font-weight: 800; margin: 0 0 10px; }
+        .post-text { font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 20px; }
+        
+        /* 이미지 영역 */
+        .img-container { position: relative; margin-bottom: 15px; }
+        .img-container img { width: 100%; border-radius: 25px; object-fit: cover; }
+        .next-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.8); width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+
+        .footer-stats { display: flex; gap: 15px; color: #B8B6B6; font-size: 13px; padding-bottom: 20px; border-bottom: 1px solid #F0F0F0; }
+
+        /* 댓글 영역 */
+        .comment-section { padding-top: 20px; }
+        .comment-section h3 { font-size: 16px; font-weight: 800; margin-bottom: 20px; }
+        .comment-item { display: flex; gap: 12px; margin-bottom: 20px; }
+        .comment-item .user-icon { width: 35px; height: 35px; font-size: 14px; }
+        .comment-body .c-name { font-size: 14px; font-weight: 700; }
+        .comment-body .c-name small { font-weight: 400; color: #B8B6B6; margin-left: 5px; }
+        .comment-body p { margin: 4px 0 0; font-size: 14px; color: #444; }
+
+        /* 하단 입력창 */
+        .input-area { padding: 15px 20px 30px; border-top: 1px solid #f0f0f0; }
+        .input-box { background: #F5F5F5; border-radius: 25px; padding: 8px 15px; display: flex; align-items: center; gap: 10px; }
+        .mini-profile { width: 30px; height: 30px; background: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid #ddd; font-size: 14px; }
+        .input-box input { border: none; background: none; outline: none; flex: 1; font-size: 14px; }
+
+        /* 네비게이션 바 */
+        .bottom-nav { height: 85px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; padding-bottom: 15px; }
+        .nav-item { text-decoration: none; display: flex; flex-direction: column; align-items: center; color: #B8B6B6; gap: 4px; }
+        .nav-item.active { color: #FFCFE1; }
+        .nav-item i { font-size: 20px; }
+        .nav-item span { font-size: 11px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <i class="fa-solid fa-arrow-left" onclick="history.back()"></i>
+            <h1>게시글</h1>
+        </div>
+
+        <div class="content">
+            <div class="post-user">
+                <div class="user-icon"><i class="fa-regular fa-user"></i></div>
+                <div class="user-info">
+                    <span class="name">180 일곱난쟁이</span>
+                    <span class="time">방금 전</span>
+                </div>
+            </div>
+            
+            <h2 class="post-title">성수동 숨은 카페 찾았어요!</h2>
+            <p class="post-text">골목 안쪽에 있어서 잘 안 보였는데 분위기 대박입니다. 커피도 맛있고 사장님도 친절하세요. 주말에는 웨이팅이 좀 있을 수 있으니 오픈런 추천드립니다!</p>
+            
+            <div class="img-container">
+                <img src="/img/성수동 숨은 카페.png" alt="카페 이미지">
+                <div class="next-btn"><i class="fa-solid fa-chevron-right"></i></div>
+            </div>
+
+            <div class="footer-stats">
+                <span><i class="fa-regular fa-heart"></i> 486</span>
+                <span><i class="fa-regular fa-comment"></i> 142</span>
+            </div>
+
+            <div class="comment-section">
+                <h3>댓글 142</h3>
+                <div class="comment-item">
+                    <div class="user-icon"><i class="fa-regular fa-user"></i></div>
+                    <div class="comment-body">
+                        <span class="c-name">초코라떼 <small>방금 전</small></span>
+                        <p>정보 감사합니다! 꼭 가봐야겠어요.</p>
+                    </div>
+                </div>
+                <div class="comment-item">
+                    <div class="user-icon"><i class="fa-regular fa-user"></i></div>
+                    <div class="comment-body">
+                        <span class="c-name">Re자몽 <small>1분 전</small></span>
+                        <p>사진 너무 예쁘게 잘 찍으셨네요 ㅎㅅㅎ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <div class="input-box">
+                <div class="mini-profile">🦉</div>
+                <input type="text" placeholder="댓글을 남겨보세요...">
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i><span>홈</span></a>
+            <a href="게시판.html" class="nav-item active"><i class="fa-solid fa-users"></i><span>게시판</span></a>
+            <a href="찜.html" class="nav-item"><i class="fa-solid fa-heart"></i><span>찜</span></a>
+            <a href="MyPage.html" class="nav-item"><i class="fa-solid fa-user"></i><span>MY</span></a>
+        </nav>
+    </div>
+</body>
+</html>
