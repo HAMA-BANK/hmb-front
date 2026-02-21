@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 위치 지도 - 검색 기능 추가</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; font-family: sans-serif; }
+
+        /* 지도 전체 컨테이너 */
+        .app-container { position: relative; width: 393px; height: 852px; box-shadow: 0 12px 40px rgba(0,0,0,0.15); border-radius: 20px; overflow: hidden; }
+        
+        #map { width: 100%; height: 100%; }
+
+        /* 검색창 스타일 */
+        .search-box {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; z-index: 1000;
+        }
+
+        #search-input {
+            width: 100%; padding: 12px 15px; border: none; border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 16px; outline: none;
+        }
+
+        /* 연관 검색어(추천 목록) 스타일 */
+        .suggestions {
+            background: white; border-radius: 0 0 10px 10px; margin-top: 2px;
+            max-height: 200px; overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: none; /* 검색 전에는 숨김 */
+        }
+
+        .suggestion-item {
+            padding: 12px 15px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 14px;
+        }
+
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-item:hover { background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="장소, 주소 검색..." autocomplete="off">
+            <div id="suggestions" class="suggestions"></div>
+        </div>
+
+        <div id="map"></div>
+    </div>
+
+    <script>
+        // 1. 지도 초기화
+        var map = L.map('map', { doubleClickZoom: false }).setView([37.5665, 126.9780], 16);
+
+        // 2. 구글 지도 타일 (한글 지원)
+        L.tileLayer('https://mt1.google.com/vt/lyrs=m&hl=ko&x={x}&y={y}&z={z}').addTo(map);
+
+        var currentMarker;
+        var searchMarker;
+
+        // 3. 내 위치 찾기 (따닥 더블 클릭)
+        function findMyLocation() {
+            map.locate({setView: true, maxZoom: 16});
+        }
+        findMyLocation();
+
+        map.on('locationfound', function(e) {
+            if (currentMarker) map.removeLayer(currentMarker);
+            currentMarker = L.marker(e.latlng).addTo(map).bindPopup("<b>당신의 현재위치</b>").openPopup();
+        });
+
+        map.on('dblclick', function() { findMyLocation(); });
+
+        // 4. 검색 및 연관 검색어 기능
+        const searchInput = document.getElementById('search-input');
+        const suggestionsBox = document.getElementById('suggestions');
+
+        // 입력할 때마다 연관 검색어 가져오기
+        searchInput.addEventListener('input', function() {
+            const query = this.value;
+            if (query.length < 2) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+
+            // 오픈소스 검색 API 사용 (Nominatim)
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&addressdetails=1&limit=5&accept-language=ko`)
+                .then(response => response.json())
+                .then(data => {
+                    suggestionsBox.innerHTML = '';
+                    if (data.length > 0) {
+                        suggestionsBox.style.display = 'block';
+                        data.forEach(place => {
+                            const div = document.createElement('div');
+                            div.className = 'suggestion-item';
+                            div.innerText = place.display_name;
+                            div.onclick = function() {
+                                moveMapTo(place.lat, place.lon, place.display_name);
+                            };
+                            suggestionsBox.appendChild(div);
+                        });
+                    } else {
+                        suggestionsBox.style.display = 'none';
+                    }
+                });
+        });
+
+        // 장소 선택 시 지도 이동
+        function moveMapTo(lat, lon, name) {
+            const latlng = [lat, lon];
+            map.setView(latlng, 16);
+            
+            if (searchMarker) map.removeLayer(searchMarker);
+            searchMarker = L.marker(latlng).addTo(map).bindPopup(`<b>${name}</b>`).openPopup();
+            
+            suggestionsBox.style.display = 'none';
+            searchInput.value = name;
+        }
+
+        // 검색창 외 클릭 시 목록 닫기
+        document.addEventListener('click', (e) => {
+            if (!document.querySelector('.search-box').contains(e.target)) {
+                suggestionsBox.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
